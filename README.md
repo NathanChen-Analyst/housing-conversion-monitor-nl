@@ -63,4 +63,4 @@ config.yaml         paths, years, spatial unit, model settings
 
 ## Author
 
-Nathan Chen — PhD in housing economics; the detection method was developed for research on local housing supply and prices. Code MIT, data CC BY 4.0.
+Nathan Chen — PhD in economics. Code MIT, data CC BY 4.0.
