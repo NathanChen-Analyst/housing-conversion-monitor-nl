@@ -126,7 +126,7 @@
     if (window.innerWidth < 900) $("panel").scrollIntoView({ behavior: "smooth", block: "start" }); }
 
   function series(getY, w = 300, h = 110, mark = year) {
-    const mL = 30, mR = 8, mT = 8, mB = 20;
+    const mL = 40, mR = 8, mT = 8, mB = 20;
     const xs = d3.scaleLinear().domain([Y0, Y1]).range([mL, w - mR]);
     const ymax = Math.max(1, d3.max(YEARS, getY));
     const ys = d3.scaleLinear().domain([0, ymax]).nice().range([h - mB, mT]);

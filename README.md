@@ -1,9 +1,10 @@
 # Housing Conversion Monitor NL
 
-**Where did offices become homes?**
-Every dwelling created out of former office space in the Netherlands since 2012 — 49,362 of them — detected from the version history of the national building register (Kadaster BAG) and mapped per neighbourhood (wijk).
+[![Office-to-housing conversions per wijk, Netherlands 2012–2024](docs/screenshot.png)](https://NathanChen-Analyst.github.io/housing-conversion-monitor-nl/)
 
-**Live map:** https://NathanChen-Analyst.github.io/housing-conversion-monitor-nl/
+**Where did offices become homes?** Every dwelling created out of former office space in the Netherlands since 2012 — 49,362 of them — detected from the version history of the national building register (Kadaster BAG) and mapped per neighbourhood (wijk).
+
+**→ Open the live map:** https://NathanChen-Analyst.github.io/housing-conversion-monitor-nl/
 
 [![ci](https://github.com/NathanChen-Analyst/housing-conversion-monitor-nl/actions/workflows/ci.yml/badge.svg)](https://github.com/NathanChen-Analyst/housing-conversion-monitor-nl/actions)
 
