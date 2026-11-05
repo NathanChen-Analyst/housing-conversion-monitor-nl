@@ -146,3 +146,8 @@ footer b { color: var(--ink-2); font-weight: 500; }
 .legend .sw.none { background: var(--land); }
 .legend .sw.hatched { background: repeating-linear-gradient(45deg, var(--seq-3) 0 1.2px, transparent 1.2px 4px); }
 .panel .fv { color: var(--ink-3); font-size: 11.5px; font-family: var(--font-mono); }
+
+/* map first */
+header { align-items: flex-start; }
+.sub { max-width: 70ch; }
+.main.front { margin-top: 2px; }

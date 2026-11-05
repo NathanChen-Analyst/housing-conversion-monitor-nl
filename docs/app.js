@@ -165,14 +165,14 @@
     tb.innerHTML = rows.map((f, i) => `<tr data-code="${f.code}"><td>${i + 1}</td><td>${f.name}<br><span class="fv">${f.code}</span></td>
         <td class="num">${fmt(val(f))}</td><td class="num">${fmt(f.total)}</td><td class="num">${show(f, year - 1)}</td>
         <td class="drvtag">${(f.total / nationalTotal * 100).toFixed(2)}%</td></tr>`).join("");
-    tb.querySelectorAll("tr").forEach(tr => tr.onclick = () => { showTab("map"); const f = feats.find(x => x.code === tr.dataset.code); if (f) select(f); });
+    tb.querySelectorAll("tr").forEach(tr => tr.onclick = () => { const f = feats.find(x => x.code === tr.dataset.code); if (f) { select(f); $("tab-map").scrollIntoView({ behavior: "smooth", block: "start" }); } });
   }
   $("list-n").onchange = renderList;
 
   // ---------- tabs ----------
   function showTab(name) {
     document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === name)));
-    for (const t of ["map", "list", "method"]) $("tab-" + t).hidden = t !== name;
+    for (const t of ["list", "method"]) $("tab-" + t).hidden = t !== name;
   }
   document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
 

@@ -14,25 +14,12 @@
     <div>
       <div class="tag">Netherlands · Kadaster BAG lifecycle data · <span id="unit-label">wijk</span> level · 2012–2024</div>
       <h1>Where did offices become homes?</h1>
-      <p class="sub">Every dwelling created out of former office space in the Netherlands since 2012, detected from the version history of the national building register and mapped per neighbourhood. Slide through the years, click an area.</p>
+      <p class="sub">Every dwelling created out of former office space in the Netherlands since 2012, detected from the national building register. Slide through the years, click an area.</p>
     </div>
     <span class="demo-pill" id="demo-pill" hidden>Prototype · synthetic numbers on a placeholder grid</span>
   </header>
 
-  <section class="stats" aria-label="Headline figures">
-    <div class="stat"><div class="k">Total 2012–2024</div><div class="v" id="s-ev">—</div><div class="d">dwellings from former offices</div></div>
-    <div class="stat"><div class="k">Converted in <span id="s-total-yr">—</span></div><div class="v" id="s-total">—</div><div class="d">dwellings, national, selected year</div></div>
-    <div class="stat"><div class="k">Wijken involved</div><div class="v" id="s-mae">—</div><div class="d">neighbourhoods with at least one conversion</div></div>
-    <div class="stat"><div class="k">Peak</div><div class="v" id="s-cap">—</div><div class="d">peak year</div></div>
-  </section>
-
-  <nav class="tabs" role="tablist">
-    <button type="button" role="tab" aria-selected="true" data-tab="map">Map</button>
-    <button type="button" role="tab" aria-selected="false" data-tab="list">Ranking</button>
-    <button type="button" role="tab" aria-selected="false" data-tab="method">Method</button>
-  </nav>
-
-  <section id="tab-map" class="main">
+  <section id="tab-map" class="main front">
     <div class="plate">
       <div class="toolbar">
         <div class="seg" role="group" aria-label="Layer">
@@ -60,7 +47,19 @@
     <aside class="panel" id="panel"><div class="empty">Select an area on the map.</div></aside>
   </section>
 
-  <section id="tab-list" class="plate listwrap" hidden>
+  <section class="stats" aria-label="Headline figures">
+    <div class="stat"><div class="k">Total 2012–2024</div><div class="v" id="s-ev">—</div><div class="d">dwellings from former offices</div></div>
+    <div class="stat"><div class="k">Converted in <span id="s-total-yr">—</span></div><div class="v" id="s-total">—</div><div class="d">dwellings, national, selected year</div></div>
+    <div class="stat"><div class="k">Wijken involved</div><div class="v" id="s-mae">—</div><div class="d">neighbourhoods with at least one conversion</div></div>
+    <div class="stat"><div class="k">Peak</div><div class="v" id="s-cap">—</div><div class="d">peak year</div></div>
+  </section>
+
+  <nav class="tabs" role="tablist">
+    <button type="button" role="tab" aria-selected="true" data-tab="list">Ranking</button>
+    <button type="button" role="tab" aria-selected="false" data-tab="method">Method</button>
+  </nav>
+
+  <section id="tab-list" class="plate listwrap">
     <div class="toolbar">
       <span class="sect">Top wijken · <span class="yr-txt">—</span></span>
       <span class="spacer"></span>
