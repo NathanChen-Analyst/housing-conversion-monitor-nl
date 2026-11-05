@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Housing Conversion Monitor NL</title>
+<meta name="description" content="Where offices become homes: detection and forecast of non-residential to residential conversions per Dutch neighbourhood, from BAG lifecycle data.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="tag">Netherlands · Kadaster BAG lifecycle data · <span id="unit-label">wijk</span> level</div>
+      <h1>Where will offices become homes next year?</h1>
+      <p class="sub">Detection and forecast of non-residential → residential conversions per neighbourhood, built from BAG registration events and CBS statistics. Click an area to see the forecast, what actually happened, and what drove it.</p>
+    </div>
+    <span class="demo-pill" id="demo-pill" hidden>Prototype · synthetic numbers on a placeholder grid</span>
+  </header>
+
+  <section class="stats" aria-label="Headline figures">
+    <div class="stat"><div class="k">Forecast · <span class="yr-txt">—</span></div><div class="v" id="s-total">—</div><div class="d">converted dwellings, national</div></div>
+    <div class="stat"><div class="k">MAE vs seasonal naive</div><div class="v" id="s-mae">—</div><div class="d">test year</div></div>
+    <div class="stat"><div class="k">Captured by top-200 list</div><div class="v" id="s-cap">—</div><div class="d">share of actual conversions in the 200 highest-ranked areas</div></div>
+    <div class="stat"><div class="k">Events processed</div><div class="v" id="s-ev">—</div><div class="d">BAG voorkomens</div></div>
+  </section>
+
+  <nav class="tabs" role="tablist">
+    <button type="button" role="tab" aria-selected="true" data-tab="map">Map</button>
+    <button type="button" role="tab" aria-selected="false" data-tab="list">Scouting list</button>
+    <button type="button" role="tab" aria-selected="false" data-tab="method">Method</button>
+  </nav>
+
+  <section id="tab-map" class="main">
+    <div class="plate">
+      <div class="toolbar">
+        <div class="seg" role="group" aria-label="Layer">
+          <button type="button" id="m-pred" aria-pressed="true">Forecast</button>
+          <button type="button" id="m-act" aria-pressed="false">Actual</button>
+          <button type="button" id="m-err" aria-pressed="false">Error</button>
+        </div>
+        <label class="yearctl">Year
+          <input type="range" id="year" min="2019" max="2024" step="1" value="2024">
+          <output id="year-out">2024</output>
+        </label>
+        <span class="spacer"></span>
+        <div class="zoomctl">
+          <button type="button" id="z-in" aria-label="Zoom in">+</button>
+          <button type="button" id="z-out" aria-label="Zoom out">−</button>
+          <button type="button" id="z-reset" aria-label="Reset view">⌂</button>
+        </div>
+      </div>
+      <div class="mapbox" id="mapbox">
+        <svg id="map" viewBox="0 0 640 720" role="img" aria-label="Map of the Netherlands with forecast per area"></svg>
+        <div class="tip" id="tip"></div>
+        <div class="legend"><div class="lbl" id="lg-title">Forecast</div><div class="bar" id="lg-bar"></div><div class="lbl"><span id="lg-min">0</span><span id="lg-max">—</span></div></div>
+        <div class="hint">scroll / pinch to zoom · drag to pan</div>
+      </div>
+    </div>
+    <aside class="panel" id="panel"><div class="empty">Select an area on the map.</div></aside>
+  </section>
+
+  <section id="tab-list" class="plate listwrap" hidden>
+    <div class="toolbar">
+      <span class="sect">Top areas by forecast · <span class="yr-txt">—</span></span>
+      <span class="spacer"></span>
+      <label class="yearctl">Show <select id="list-n"><option>25</option><option selected>50</option><option>100</option><option>200</option></select></label>
+    </div>
+    <div class="tablewrap"><table id="list"><thead><tr><th>#</th><th>Area</th><th class="num">Forecast</th><th class="num">Actual</th><th class="num">Last year</th><th>Top driver</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section id="tab-method" class="method" hidden>
+    <div><h3>What counts as a conversion</h3><p>A verblijfsobject whose <code>gebruiksdoel</code> gains a <code>woonfunctie</code>; or a residential unit appearing in a pand built two or more years earlier that previously held only non-residential units; or residential units appearing after a <code>Verbouwing pand</code> status. Each VBO is counted once, at its first qualifying event. Totals are reconciled against CBS transformatie statistics per municipality and year.</p></div>
+    <div><h3>How the forecast is made</h3><p>One row per neighbourhood and year. Features: non-residential stock by use and build decade, floor area, last year's and the last three years' conversions here and in adjacent neighbourhoods, and lagged CBS indicators. Models: a seasonal-naive baseline, a negative-binomial GLM for interpretable coefficients, and a LightGBM model with a Tweedie objective and monotone constraints. Trained to 2022, validated on 2023, tested once on 2024.</p></div>
+    <div><h3>No peeking</h3><p>Every feature is computed from events the register had recorded by the forecast date, using <code>tijdstipRegistratie</code> rather than <code>beginGeldigheid</code>. A test recomputes the lag features from raw events and fails if the two disagree.</p></div>
+    <div><h3>Boundaries</h3><p>All history is re-aggregated by coordinate onto one boundary vintage (CBS Wijk- en buurtkaart, reference year in <code>config.yaml</code>), so municipal mergers and redrawn wijken do not break the panel. Only CBS covariates need a crosswalk, weighted by BAG address counts.</p></div>
+  </section>
+
+  <footer>
+    <span>Author: <b>Nathan Chen</b> · Code: <a id="repo-link" href="https://github.com/YOUR_GITHUB_USERNAME/housing-conversion-monitor-nl">github.com/YOUR_GITHUB_USERNAME/housing-conversion-monitor-nl</a></span>
+    <span>Data: Kadaster BAG (CC0) · CBS Wijk- en buurtkaart (CC BY 4.0)</span>
+  </footer>
+</div>
+
+<script src="d3.v7.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

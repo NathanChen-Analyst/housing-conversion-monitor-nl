@@ -1,0 +1,39 @@
+# Housing Conversion Monitor NL — pipeline configuration.
+# Paths are relative to the repository root.
+
+paths:
+  bag_extract: data/raw/lvbag-extract-nl.zip      # PDOK full extract (not committed)
+  events: data/processed/events.parquet           # one row per VBO lifecycle event
+  conversions: data/processed/conversions.parquet # one row per detected conversion
+  cbs_dir: data/raw/cbs                           # CBS wijk/buurt statistics by year
+  wijk_geo: data/raw/wijk_2024.gpkg               # reference boundaries (CBS Wijk- en buurtkaart)
+  features: data/processed/features.parquet       # wijk × year model table
+  model_dir: data/processed/models
+  site_data: docs/data                            # JSON consumed by the GitHub Pages map
+
+space:
+  unit: wijk            # wijk | gemeente | pc4
+  reference_year: 2024  # all history re-aggregated onto this boundary vintage
+
+time:
+  start_year: 2015
+  end_year: 2024
+  train_until: 2022     # inclusive
+  validate_year: 2023
+  test_year: 2024
+
+conversion:
+  # A VBO counts as converted when any of these patterns fire. See src/hcm/conversions.py.
+  patterns: [use_change, new_unit_in_old_pand, after_verbouwing]
+  min_pand_age_years: 2          # pattern 2: pand bouwjaar must be at least this many years before the event
+  residential_uses: [woonfunctie]
+
+model:
+  target: n_conversions_next_year
+  objective: tweedie
+  tweedie_variance_power: 1.4
+  baseline: seasonal_naive
+  monotone:            # +1 = forecast must not decrease in this feature
+    nonres_stock: 1
+    nonres_floor_area: 1
+    conversions_lag1: 1
