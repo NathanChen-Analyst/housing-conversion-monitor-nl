@@ -3,112 +3,134 @@
 <head>
 <meta charset="utf-8">
 <title>Housing Conversion Monitor NL — README graphic</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap">
 <style>
-  /* Static poster for the README. GitHub shows it at ~60% width, so type is deliberately large. */
-  :root { color-scheme: light; }
-  body { background: #ffffff; padding: 0; }
-  #poster { width: 1200px; padding: 30px 36px 26px; background: #ffffff; color: var(--ink); display: grid; gap: 20px; font-size: 16px; }
-  .p-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; }
-  .p-head h1 { font-size: 38px; margin: 0; letter-spacing: -0.015em; line-height: 1.1; }
-  .p-head .sub { font-size: 17px; margin: 8px 0 0; color: var(--ink-2); max-width: 58ch; line-height: 1.4; }
-  .p-kpis { display: flex; gap: 30px; padding-bottom: 4px; }
-  .p-kpis .v { font-size: 34px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
-  .p-kpis .k { font-family: var(--font-mono); font-size: 12px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); margin-top: 6px; }
-  .p-map { position: relative; height: 640px; background: var(--water); border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
-  .p-map svg { width: 100%; height: 100%; display: block; }
-  .p-map .legend { left: 18px; bottom: 18px; font-size: 14px; padding: 12px 14px; border-radius: 8px; }
-  .p-map .legend .bar { width: 220px; height: 12px; }
-  .p-map .legend .lbl { font-size: 12.5px; }
-  .p-map .legend .keys { font-size: 13px; }
-  .p-map .src { position: absolute; right: 18px; top: 16px; font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); background: rgba(255,255,255,.9); padding: 6px 10px; border-radius: 6px; }
-  .p-map .ttl { position: absolute; left: 18px; top: 16px; font-size: 15px; font-weight: 600; background: rgba(255,255,255,.9); padding: 7px 11px; border-radius: 6px; }
-  .area { stroke: #ffffff; stroke-width: .4; stroke-opacity: .6; }
-  .city { r: 2.6; }
-  .city-label { font-size: 12.5px; stroke-width: 3px; }
-  .p-below { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: stretch; }
-  .p-card { border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px 10px; background: #fff; }
-  .p-card h3 { margin: 0 0 8px; font-size: 18px; font-weight: 600; }
-  .p-card h3 small { font-weight: 400; color: var(--ink-3); font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; margin-left: 10px; }
-  table { font-size: 16px; }
-  th, td { padding: 7px 8px; border-bottom: 1px solid var(--line); }
-  #top td { padding: 9.5px 8px; }
-  #years td { padding: 6px 8px; }
+  /* Static graphic for the README. Light only, fixed width, no controls. Rendered by scripts/render_poster.js */
+  :root {
+    --ink: #1b2130; --ink-2: #4a5263; --ink-3: #8a91a1; --line: #e3dfd6; --land: #f1eee7; --water: #dfe9f0;
+    --accent: #b5452b;
+    --seq-0: #f6eadb; --seq-1: #efc9a4; --seq-2: #e39a6a; --seq-3: #cf6a3e; --seq-4: #a53d20; --seq-5: #661f0f;
+    --font-body: "Public Sans", system-ui, sans-serif; --font-mono: "DM Mono", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fff; font-family: var(--font-body); color: var(--ink); }
+  #poster { width: 1500px; padding: 40px 44px 32px; background: #fff; display: grid; gap: 22px; }
+
+  .head { display: grid; grid-template-columns: 1fr auto; gap: 30px; align-items: end; }
+  .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+  h1 { margin: 6px 0 0; font-size: 40px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+  .sub { margin: 10px 0 0; font-size: 17px; color: var(--ink-2); max-width: 66ch; line-height: 1.4; }
+  .kpis { display: flex; gap: 36px; padding-bottom: 4px; }
+  .kpi .v { font-size: 38px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .kpi .k { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin-top: 7px; }
+
+  .map { position: relative; height: 860px; background: var(--water); border-radius: 14px; overflow: hidden; }
+  .map svg { width: 100%; height: 100%; display: block; }
+  .land { fill: var(--land); }
+  .water { fill: var(--water); }
+  .area { stroke: #fff; stroke-width: .3; stroke-opacity: .5; }
+  .province { fill: none; stroke: #2f3744; stroke-width: 1.4; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: .85; }
+  .city { fill: var(--ink); }
+  .city-label { font-family: var(--font-body); font-weight: 600; font-size: 13px; fill: var(--ink); paint-order: stroke; stroke: #fff; stroke-width: 3.5px; stroke-linejoin: round; }
+  .legend { position: absolute; left: 20px; bottom: 20px; background: rgba(255,255,255,.96); border-radius: 10px; padding: 14px 16px; display: grid; gap: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+  .legend .t { font-weight: 600; font-size: 14px; }
+  .legend .bar { height: 12px; width: 240px; border-radius: 3px; }
+  .legend .lbl { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-2); }
+  .legend .key { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--ink-2); }
+  .legend .key i { width: 14px; height: 11px; background: var(--land); border: 1px solid var(--line); border-radius: 2px; }
+  .src { position: absolute; right: 20px; bottom: 20px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); background: rgba(255,255,255,.9); padding: 6px 9px; border-radius: 6px; }
+  .callout { position: absolute; right: 20px; top: 20px; max-width: 330px; background: rgba(255,255,255,.96); border-radius: 10px; padding: 14px 16px; box-shadow: 0 2px 10px rgba(0,0,0,.06); font-size: 14px; line-height: 1.45; color: var(--ink-2); }
+  .callout b { color: var(--ink); }
+
+  .tables { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .card { border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px 10px; }
+  .card h3 { margin: 0 0 12px; font-size: 17px; font-weight: 700; display: flex; justify-content: space-between; align-items: baseline; }
+  .card h3 small { font-family: var(--font-mono); font-weight: 400; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  td { padding: 8px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
   tr:last-child td { border-bottom: 0; }
-  td.rank { color: var(--ink-3); font-family: var(--font-mono); width: 2.2em; }
-  td.bar-cell { width: 170px; min-width: 170px; }
-  td.bar-cell i { display: block; height: 11px; background: var(--seq-3); border-radius: 2px; }
-  td.bar-cell i.hi { background: var(--accent); }
-  td.num { font-size: 16px; }
-  td.pct { color: var(--ink-3); font-size: 14px; }
-  .p-foot { display: flex; justify-content: space-between; font-size: 13.5px; color: var(--ink-3); border-top: 1px solid var(--line); padding-top: 12px; }
+  td.rank { color: var(--ink-3); font-family: var(--font-mono); font-size: 12.5px; width: 28px; padding-left: 2px; }
+  td.name { width: 100%; white-space: normal; }
+  td.name small { color: var(--ink-3); font-size: 13px; }
+  td.bar { width: 190px; }
+  td.bar i { display: block; height: 11px; background: var(--seq-2); border-radius: 2px; }
+  td.bar i.hi { background: var(--accent); }
+  td.num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 14px; }
+  td.pct { text-align: right; font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-3); width: 60px; }
+  tr.hi td { background: #fbf1ec; }
+
+  .foot { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink-3); border-top: 1px solid var(--line); padding-top: 12px; }
+  .foot b { color: var(--ink-2); font-weight: 500; }
 </style>
 </head>
 <body>
 <div id="poster">
-  <div class="p-head">
+  <div class="head">
     <div>
+      <div class="eyebrow">Housing Conversion Monitor NL · 2012–2024</div>
       <h1>Where did offices become homes?</h1>
-      <p class="sub">Dwellings created out of former office space in the Netherlands, 2012–2024, per neighbourhood. Detected from the version history of the national building register (Kadaster BAG).</p>
+      <p class="sub">Every dwelling created out of former office space in the Netherlands, located per neighbourhood (wijk) and detected from the version history of the national building register (Kadaster BAG).</p>
     </div>
-    <div class="p-kpis">
-      <div><div class="v" id="k-total">—</div><div class="k">dwellings</div></div>
-      <div><div class="v" id="k-wijken">—</div><div class="k">neighbourhoods</div></div>
-      <div><div class="v" id="k-peak">—</div><div class="k">peak year</div></div>
+    <div class="kpis">
+      <div class="kpi"><div class="v" id="k-total">—</div><div class="k">dwellings</div></div>
+      <div class="kpi"><div class="v" id="k-wijken">—</div><div class="k">neighbourhoods</div></div>
+      <div class="kpi"><div class="v" id="k-peak">—</div><div class="k">peak year</div></div>
     </div>
   </div>
 
-  <div class="p-map" id="mapbox">
-    <svg id="map" viewBox="0 0 1126 640" role="img" aria-label="Map"></svg>
-    <div class="ttl">Dwellings converted per neighbourhood, 2012–2024</div>
+  <div class="map">
+    <svg id="map" viewBox="0 0 1412 860" role="img" aria-label="Map"></svg>
+    <div class="callout" id="callout"></div>
     <div class="legend">
+      <div class="t">Dwellings converted, 2012–2024</div>
       <div class="bar" id="lg-bar"></div>
-      <div class="lbl"><span>1</span><span id="lg-max">—</span></div>
-      <div class="lbl keys"><span><i class="sw none"></i> none detected</span></div>
+      <div class="lbl"><span>1</span><span id="lg-mid"></span><span id="lg-max">—</span></div>
+      <div class="key"><i></i> none detected</div>
     </div>
     <div class="src">Kadaster BAG (CC0) · CBS Wijk- en buurtkaart 2012 · Nathan Chen</div>
   </div>
 
-  <div class="p-below">
-    <div class="p-card">
-      <h3>Top 10 neighbourhoods <small>2012–2024</small></h3>
+  <div class="tables">
+    <div class="card">
+      <h3>Top 10 neighbourhoods <small>dwellings 2012–2024 · share of NL</small></h3>
       <table id="top"><tbody></tbody></table>
     </div>
-    <div class="p-card">
-      <h3>The Netherlands, year by year</h3>
+    <div class="card">
+      <h3>The Netherlands, year by year <small>dwellings converted</small></h3>
       <table id="years"><tbody></tbody></table>
     </div>
   </div>
 
-  <div class="p-foot">
-    <span>Live map: nathanchen-analyst.github.io/housing-conversion-monitor-nl</span>
-    <span>Neighbourhood-years with fewer than 3 conversions are counted in totals but not located.</span>
+  <div class="foot">
+    <span>Interactive map: <b>nathanchen-analyst.github.io/housing-conversion-monitor-nl</b></span>
+    <span>Neighbourhood-years with fewer than 3 conversions are counted in totals but not located on the map.</span>
   </div>
 </div>
 
 <script src="d3.v7.min.js"></script>
 <script>
 (async function () {
-  const W = 1126, H = 640, fmt = d3.format(",");
+  const W = 1412, H = 860, fmt = d3.format(",");
   const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
   const load = async u => { const r = await fetch(u); if (!r.ok) throw new Error(u); return r.json(); };
   const data = await load("data/wijk_year_conversions.json");
   const geo = await load("data/wijken.geojson");
+  const provinces = await load("data/provincies.geojson").catch(() => null);
   const outline = await load("data/outline.geojson").catch(() => null);
   const cities = await load("data/cities.json").catch(() => []);
   const ringArea = r => { let a = 0; for (let i = 0; i < r.length - 1; i++) a += r[i][0] * r[i + 1][1] - r[i + 1][0] * r[i][1]; return a; };
   const rewind = fc => { for (const f of fc.features) { const g = f.geometry; if (!g) continue;
     const polys = g.type === "Polygon" ? [g.coordinates] : g.type === "MultiPolygon" ? g.coordinates : [];
     for (const poly of polys) poly.forEach((ring, i) => { const a = ringArea(ring); if ((i === 0 && a > 0) || (i > 0 && a < 0)) ring.reverse(); }); } return fc; };
-  rewind(geo); if (outline) rewind(outline);
+  rewind(geo); if (outline) rewind(outline); if (provinces) rewind(provinces);
 
   const YEARS = data.meta.years.map(Number);
   const feats = geo.features;
   for (const f of feats) {
     const a = data.areas[f.properties.wijk_code];
     const raw = (a && a.name) || f.properties.name || f.properties.wijk_code;
-    f.name = raw.replace(/^Wijk \d+ (?=[^(\s])/, "");
+    const m = raw.match(/^(.*?)\s*\(([^)]+)\)\s*$/);
+    f.wk = (m ? m[1] : raw).replace(/^Wijk \d+ ?/, "") || raw; f.gm = m ? m[2] : "";
     f.total = a ? YEARS.reduce((s, y) => s + (a.n[y] || 0), 0) : 0;
     f.plus = a && a.suppressed.length > 0;
     f.hasData = !!a;
@@ -120,8 +142,8 @@
   document.getElementById("k-wijken").textContent = fmt(feats.filter(f => f.hasData).length);
   document.getElementById("k-peak").textContent = peakY;
 
-  // map: fit the land tightly (the country is taller than wide, so give it the full height)
-  const proj = d3.geoMercator().fitExtent([[220, 14], [W - 220, H - 14]], outline || geo);
+  // map
+  const proj = d3.geoMercator().fitExtent([[40, 24], [W - 40, H - 24]], outline || geo);
   const path = d3.geoPath(proj);
   const svg = d3.select("#map");
   if (outline) svg.selectAll("path.bg").data(outline.features).join("path").attr("class", d => d.properties.kind === "water" ? "water" : "land").attr("d", path);
@@ -131,26 +153,36 @@
   const scale = v => s(Math.sqrt(Math.min(1, v / hi)));
   svg.append("g").selectAll("path").data(feats).join("path").attr("class", "area").attr("d", path)
     .attr("fill", d => d.total > 0 ? scale(d.total) : "var(--land)");
+  if (provinces) svg.append("g").selectAll("path").data(provinces.features).join("path").attr("class", "province").attr("d", path);
   const big = cities.filter(c => c.w >= 0.2).map(c => ({ ...c, xy: proj([c.lon, c.lat]) }));
-  const place = { Haarlem: [-6, 4, "end"], Amsterdam: [0, -8, "middle"], Almere: [6, 13, "start"], "Den Haag": [-6, 4, "end"], Leiden: [-6, 4, "end"], Rotterdam: [6, 13, "start"], Dordrecht: [6, 12, "start"] };
+  const place = { Haarlem: [-7, 5, "end"], Amsterdam: [0, -9, "middle"], Almere: [7, 14, "start"], "Den Haag": [-7, 5, "end"], Leiden: [-7, 5, "end"], Rotterdam: [7, 14, "start"], Delft: [-7, 5, "end"], Maastricht: [-7, 5, "end"] };
   const cg = svg.append("g");
   cg.selectAll("circle").data(big).join("circle").attr("class", "city").attr("cx", d => d.xy[0]).attr("cy", d => d.xy[1]).attr("r", 2.6);
   cg.selectAll("text").data(big).join("text").attr("class", "city-label")
-    .attr("x", d => d.xy[0] + (place[d.name] ? place[d.name][0] : 6)).attr("y", d => d.xy[1] + (place[d.name] ? place[d.name][1] : 4))
+    .attr("x", d => d.xy[0] + (place[d.name] ? place[d.name][0] : 7)).attr("y", d => d.xy[1] + (place[d.name] ? place[d.name][1] : 5))
     .attr("text-anchor", d => place[d.name] ? place[d.name][2] : "start").text(d => d.name);
   document.getElementById("lg-bar").style.background = `linear-gradient(90deg, ${d3.range(0, 1.001, 0.1).map(t => scale(t * t * hi)).join(",")})`;
+  document.getElementById("lg-mid").textContent = fmt(Math.round(hi / 4));
   document.getElementById("lg-max").textContent = "≥" + fmt(Math.round(hi));
 
-  // left table: top 10 neighbourhoods
+  // callout: the one-sentence story
+  const top5share = feats.filter(f => f.total > 0).sort((a, b) => b.total - a.total).slice(0, 10).reduce((s, f) => s + f.total, 0) / nationalTotal;
+  const byGm = d3.rollups(feats.filter(f => f.gm), v => d3.sum(v, f => f.total), f => f.gm).sort((a, b) => b[1] - a[1]);
+  document.getElementById("callout").innerHTML =
+    `<b>${fmt(nationalTotal)} dwellings</b> came out of former offices between 2012 and 2024. Ten neighbourhoods account for <b>${(top5share * 100).toFixed(0)}%</b> of them; ` +
+    `<b>${byGm[0][0]}</b>, <b>${byGm[1][0]}</b> and <b>${byGm[2][0]}</b> lead, with <b>${byGm[3][0]}</b> close behind. The wave peaked in <b>${peakY}</b> and has halved since.`;
+
+  // table 1: top 10 neighbourhoods
   const top = feats.filter(f => f.total > 0).sort((a, b) => b.total - a.total).slice(0, 10);
   const mx = top[0].total;
   document.querySelector("#top tbody").innerHTML = top.map((f, i) =>
-    `<tr><td class="rank">${i + 1}</td><td>${f.name}</td><td class="bar-cell"><i class="${i === 0 ? "hi" : ""}" style="width:${100 * f.total / mx}%"></i></td><td class="num">${fmt(f.total)}${f.plus ? "+" : ""}</td><td class="num pct">${(f.total / nationalTotal * 100).toFixed(1)}%</td></tr>`).join("");
+    `<tr><td class="rank">${i + 1}</td><td class="name">${f.wk}${f.gm ? ` <small>${f.gm}</small>` : ""}</td><td class="bar"><i style="width:${100 * f.total / mx}%"></i></td><td class="num">${fmt(f.total)}${f.plus ? "+" : ""}</td><td class="pct">${(f.total / nationalTotal * 100).toFixed(1)}%</td></tr>`).join("");
 
-  // right table: year by year, with inline bars and the peak highlighted
-  const my = Math.max(...YEARS.map(y => national[y]));
+  // table 2: by year
+  const my = d3.max(YEARS, y => national[y]);
   document.querySelector("#years tbody").innerHTML = YEARS.map(y =>
-    `<tr><td class="rank">${y}</td><td class="bar-cell" style="width:250px;min-width:250px"><i class="${y === peakY ? "hi" : ""}" style="width:${100 * national[y] / my}%"></i></td><td class="num">${fmt(national[y])}</td><td class="num pct">${(national[y] / nationalTotal * 100).toFixed(0)}%</td></tr>`).join("");
+    `<tr class="${y === peakY ? "hi" : ""}"><td class="rank" style="width:auto;font-size:14px;color:var(--ink)">${y}</td><td class="bar" style="width:100%"><i class="${y === peakY ? "hi" : ""}" style="width:${100 * national[y] / my}%"></i></td><td class="num">${fmt(national[y])}</td><td class="pct">${(national[y] / nationalTotal * 100).toFixed(1)}%</td></tr>`).join("");
+
   document.body.dataset.ready = "1";
 })();
 </script>
