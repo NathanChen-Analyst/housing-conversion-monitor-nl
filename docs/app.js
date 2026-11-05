@@ -110,7 +110,15 @@
   for (const [id, m] of [["m-pred", "year"], ["m-act", "cum"]]) {
     $(id).onclick = () => { mode = m; document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", "false")); $(id).setAttribute("aria-pressed", "true"); paint(); };
   }
-  yearInput.oninput = () => { year = +yearInput.value; $("year-out").textContent = year; paint(); };
+  const setYear = y => { year = y; yearInput.value = y; $("year-out").textContent = y; paint(); };
+  yearInput.oninput = () => setYear(+yearInput.value);
+  let timer = null;
+  $("play").onclick = () => {
+    if (timer) { clearInterval(timer); timer = null; $("play").textContent = "▶"; $("play").setAttribute("aria-pressed", "false"); return; }
+    if (year >= Y1) setYear(Y0);
+    $("play").textContent = "❚❚"; $("play").setAttribute("aria-pressed", "true");
+    timer = setInterval(() => { if (year >= Y1) { $("play").onclick(); return; } setYear(year + 1); }, 800);
+  };
   if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", paint);
 
   // ---------- tooltip ----------

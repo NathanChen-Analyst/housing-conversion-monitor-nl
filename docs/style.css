@@ -154,3 +154,7 @@ header { align-items: flex-start; }
 
 /* province outlines (drawn when data/provincies.geojson exists) */
 .province { fill: none; stroke: var(--ink-2); stroke-width: 1.1; stroke-linejoin: round; vector-effect: non-scaling-stroke; pointer-events: none; opacity: .85; }
+
+/* play button */
+.play { appearance: none; width: 28px; height: 28px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--ink); font-size: 11px; cursor: pointer; padding: 0; margin-right: 2px; }
+.play[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
