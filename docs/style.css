@@ -151,3 +151,47 @@ footer b { color: var(--ink-2); font-weight: 500; }
 header { align-items: flex-start; }
 .sub { max-width: 70ch; }
 .main.front { margin-top: 2px; }
+
+/* ===== v2 layout: map first, two panels below ===== */
+.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 32px; }
+.top .title { min-width: 0; }
+.top .sub { margin-top: 4px; max-width: 56ch; }
+.kpis { display: flex; gap: 22px; flex-wrap: wrap; }
+.kpi .v { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.kpi .k { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); margin-top: 2px; }
+
+.map-plate { box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px -16px rgba(0,0,0,.25); }
+.map-plate .mapbox { height: min(76vh, 820px); }
+.play { appearance: none; width: 28px; height: 28px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--ink); font-size: 11px; cursor: pointer; padding: 0; }
+.play[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.yearctl input[type=range] { width: 200px; }
+
+.province { fill: none; stroke: var(--ink-2); stroke-width: 1.1; stroke-linejoin: round; vector-effect: non-scaling-stroke; pointer-events: none; opacity: .9; }
+.area { stroke: var(--surface); stroke-width: .35; stroke-opacity: .6; }
+.area:hover { stroke: var(--ink); stroke-width: 1.2; stroke-opacity: 1; }
+.area.sel { stroke: var(--ink); stroke-width: 1.8; stroke-opacity: 1; }
+.land { fill: var(--land); stroke: none; }
+.water { fill: var(--water); stroke: none; }
+.city-label { font-size: 10px; }
+.legend { padding: 9px 11px; }
+
+.below { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 18px; align-items: start; }
+.panel .top-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.panel .big { font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.panel .meta { display: flex; gap: 18px; font-size: 13px; color: var(--ink-2); flex-wrap: wrap; }
+.panel .meta b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.toolbar.slim { padding: 10px 14px; }
+td.num.sel-col { color: var(--accent); font-weight: 600; }
+tbody tr.active { background: var(--accent-soft); }
+
+.method-wrap { border-top: 1px solid var(--line); padding-top: 10px; }
+.method-wrap summary { cursor: pointer; font-size: 14px; color: var(--ink-2); font-weight: 500; padding: 6px 0; }
+.method-wrap[open] summary { color: var(--ink); }
+.method { padding-top: 12px; }
+
+@media (max-width: 900px) {
+  .below { grid-template-columns: 1fr; }
+  .map-plate .mapbox { height: 64vh; }
+  .yearctl input[type=range] { width: 130px; }
+  .kpis { gap: 16px; }
+}
