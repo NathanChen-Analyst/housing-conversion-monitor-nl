@@ -137,3 +137,12 @@ footer b { color: var(--ink-2); font-weight: 500; }
   .legend .bar { width: 120px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* real-data additions */
+.hatch-bar { fill: var(--seq-3); }
+.area.nodata { fill: var(--land); }
+.legend .keys { gap: 12px; justify-content: flex-start; font-family: var(--font-body); font-size: 11px; }
+.legend .sw { display: inline-block; width: 12px; height: 9px; border-radius: 2px; vertical-align: -1px; margin-right: 4px; border: 1px solid var(--line); }
+.legend .sw.none { background: var(--land); }
+.legend .sw.hatched { background: repeating-linear-gradient(45deg, var(--seq-3) 0 1.2px, transparent 1.2px 4px); }
+.panel .fv { color: var(--ink-3); font-size: 11.5px; font-family: var(--font-mono); }
