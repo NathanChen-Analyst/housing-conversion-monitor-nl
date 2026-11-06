@@ -42,17 +42,6 @@ The detector (shaded) implements the CBS definition of a *transformatie* as rule
 
 The full-history extract holds tens of millions of VBO versions.
 
-## Key engineering decisions
-
-| Decision | Why | Where |
-|---|---|---|
-| One boundary vintage (CBS 2012), every dwelling assigned by coordinate | Municipal mergers and redrawn wijken would otherwise break the panel; only CBS covariates ever need a crosswalk | [`geo.py`](src/hcm/geo.py) |
-| Registration date (`tijdstipRegistratie`) rather than validity date for anything a forecast may see | Municipalities back-date registrations by months; using validity dates would let a model peek at the future | [`sql/features.sql`](sql/features.sql), [`test_features.py`](tests/test_features.py) |
-| One count per dwelling at its earliest qualifying version | The same VBO appears in many versions and can qualify under several rules | [`export_public.py`](src/hcm/export_public.py) |
-| Small-cell suppression (<3) at publication, exact totals kept nationally | CBS convention; hides location of 9% of dwellings and none of the totals | [`export_public.py`](src/hcm/export_public.py) |
-| Static site with vendored D3, data as plain JSON | Zero infrastructure, redeploys on push, works in ten years | [`docs/`](docs/) |
-| Leakage test that recomputes lag features from raw events | Guards the time split against future edits of the SQL | [`features.assert_no_leakage`](src/hcm/features.py) |
-
 ## Built with
 
 Python 3.10+, DuckDB over Parquet for everything tabular ([`sql/`](sql/)), GeoPandas and Shapely for the point-in-polygon and boundary work ([`geo.py`](src/hcm/geo.py)), statsmodels and LightGBM for the forecast layer ([`model.py`](src/hcm/model.py)), D3 v7 for the map, pytest and ruff in GitHub Actions on two Python versions ([`tests/`](tests/), [`ci.yml`](.github/workflows/ci.yml)). The print graphic at the top is rendered from the same data files as the site ([`poster.html`](docs/poster.html)). Parse and detection steps run on a university HPC cluster; everything from the events table onward runs on a laptop in seconds.
