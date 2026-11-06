@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: mart_events_by_year
+    tests:
+      - dbt_utils_unique_combination:
+          combination_of: [year]
+    columns:
+      - name: n
+        tests:
+          - not_null
+          - dbt_expectations_positive:
+              {}
+  - name: mart_registration_lag
+    columns:
+      - name: year
+        tests: [not_null, unique]

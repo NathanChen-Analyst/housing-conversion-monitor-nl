@@ -1,29 +1,33 @@
-.PHONY: install test lint detect features train site all clean
+.PHONY: install test lint sample pipeline quality dbt dagster site clean
 
 PY ?= python
 
-install:
-	$(PY) -m pip install -e ".[dev,geo,explain]"
+install:          ## everything needed for the full pipeline
+	$(PY) -m pip install -e ".[all]"
 
 test:
 	$(PY) -m pytest -q
 
 lint:
-	ruff check src tests
+	ruff check src tests orchestration scripts
 
-detect:        ## detect conversions from data/processed/events.parquet
-	hcm detect
+sample:           ## synthetic BAG-like data so the pipeline runs without the real extract
+	hcm sample
 
-features:      ## build wijk × year feature table
-	hcm features
+pipeline:         ## materialise every Dagster asset once
+	hcm pipeline
 
-train:         ## fit baseline / NB GLM / LightGBM and print metrics
-	hcm train
+quality:          ## data-quality report → docs/quality.html
+	hcm quality
 
-site:          ## export forecasts.json for the docs/ map
+dbt:              ## dbt build (models + tests) on DuckDB
+	cd dbt && dbt build --profiles-dir .
+
+dagster:          ## Dagster UI at http://localhost:3000
+	dagster dev -f orchestration/definitions.py
+
+site:             ## export public JSON for the map from the real events table
 	hcm site
 
-all: detect features train site
-
 clean:
-	rm -rf data/processed/*.parquet data/processed/models docs/data/forecasts.json
+	rm -rf data/marts data/staging data/raw/mutations data/raw/buurt_sample.gpkg runs dbt/target docs/quality.html

@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: int_stock_snapshot
+    description: "VBO stock at 1 January per year, validity time. Grain: (year, id)."
+    tests:
+      - dbt_utils_unique_combination:
+          combination_of: [year, id]
+    columns:
+      - name: year
+        tests:
+          - not_null
+          - accepted_values:
+              values: [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
+              quote: false
+  - name: int_conversion_events
+    description: "One row per converted dwelling (illustrative detector)."
+    columns:
+      - name: vbo_id
+        tests: [not_null, unique]
+      - name: event_date
+        tests: [not_null]

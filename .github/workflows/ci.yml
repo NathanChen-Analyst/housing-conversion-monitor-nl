@@ -18,6 +18,28 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - run: python -m pip install --upgrade pip
-      - run: pip install -e ".[dev]"
-      - run: ruff check src tests
+      - run: pip install -e ".[dev,geo,quality]"
+      - run: ruff check src tests orchestration scripts
       - run: pytest -q
+
+  pipeline:
+    name: end-to-end on synthetic sample
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[all]"
+      - run: hcm sample
+      - run: hcm pipeline
+      - run: hcm quality
+      - run: cd dbt && dbt build --profiles-dir .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quality-report
+          path: |
+            docs/quality.html
+            runs/runs.jsonl

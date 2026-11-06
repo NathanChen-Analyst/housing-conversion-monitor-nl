@@ -10,7 +10,7 @@ import pandas as pd
 import typer
 
 from . import config as _config
-from . import conversions, features, model
+from . import conversions, features, model, mutations, quality, staging
 
 app = typer.Typer(help="Housing Conversion Monitor NL", no_args_is_help=True)
 log = logging.getLogger("hcm")
@@ -37,15 +37,11 @@ def features_cmd(config: Path = typer.Option(None)):
     cfg = _config.load(config)
     df = features.build_from_files(cfg["paths"])
     df.to_parquet(cfg["paths"]["features"], index=False)
-    log.info(
-        "features: %s rows × %s cols → %s", f"{len(df):,}", df.shape[1], cfg["paths"]["features"]
-    )
+    log.info("features: %s rows × %s cols → %s", f"{len(df):,}", df.shape[1], cfg["paths"]["features"])
 
 
 @app.command()
-def train(
-    config: Path = typer.Option(None), k: int = typer.Option(200, help="areas in the scouting list")
-):
+def train(config: Path = typer.Option(None), k: int = typer.Option(200, help="areas in the scouting list")):
     """Fit baseline, NB GLM and LightGBM; print validation and test metrics."""
     cfg = _config.load(config)
     df = pd.read_parquet(cfg["paths"]["features"])
@@ -84,9 +80,7 @@ def site(config: Path = typer.Option(None)):
     if cfg["paths"]["events"].exists():
         import pyarrow.parquet as pq
 
-        headline["events"] = (
-            f"{pq.ParquetFile(cfg['paths']['events']).metadata.num_rows / 1e6:.1f}M"
-        )
+        headline["events"] = f"{pq.ParquetFile(cfg['paths']['events']).metadata.num_rows / 1e6:.1f}M"
     payload = {
         "meta": {
             "unit": cfg["space"]["unit"],
@@ -105,6 +99,63 @@ def site(config: Path = typer.Option(None)):
     }
     (out_dir / "forecasts.json").write_text(json.dumps(payload), encoding="utf-8")
     log.info("wrote %s", out_dir / "forecasts.json")
+
+
+@app.command()
+def sample():
+    """Generate the synthetic BAG-like sample (data/staging, data/raw/mutations, buurt_sample.gpkg)."""
+    import runpy
+
+    runpy.run_path(str(_config.ROOT / "scripts" / "make_sample_data.py"), run_name="__main__")
+
+
+@app.command()
+def ingest(mutations_dir: Path = typer.Argument(None, help="Folder with PDOK mutation Parquet files")):
+    """Merge monthly mutation files into data/staging (idempotent; re-running a month is a no-op)."""
+    mdir = mutations_dir or _config.ROOT / "data" / "raw" / "mutations"
+    mutations.apply_all(mdir, _config.ROOT / "data" / "staging")
+
+
+@app.command()
+def snapshot(
+    year: int = typer.Argument(..., help="1 January of this year"),
+    by: str = typer.Option("validity", help="validity | registration"),
+):
+    """Print the size of the VBO stock on 1 January of a year, as it was or as it was known."""
+    con = staging.connect(_config.ROOT / "data" / "staging")
+    df = staging.snapshot(con, f"{year}-01-01", by=by)
+    typer.echo(f"{len(df):,} VBOs alive on {year}-01-01 ({by} time)")
+    typer.echo(df["gebruiksdoel"].value_counts().head(8).to_string())
+
+
+@app.command("quality")
+def quality_cmd(out: Path = typer.Option(None, help="HTML report path (default docs/quality.html)")):
+    """Run every data-quality check on the staging layer and write the HTML report."""
+    qr = quality.run(_config.ROOT / "data" / "staging")
+    html = quality.report(qr, out or _config.ROOT / "docs" / "quality.html")
+    for c in qr.checks:
+        typer.echo(f"{'PASS' if c.passed else c.severity.upper():5s} {c.layer:8s} {c.name:45s} {c.observed}")
+    typer.echo(f"report → {html}")
+    raise typer.Exit(code=0 if qr.ok else 1)
+
+
+@app.command()
+def pipeline():
+    """Materialise every Dagster asset once (same as `dagster asset materialize --select '*'`)."""
+    import subprocess
+
+    subprocess.run(
+        [
+            "dagster",
+            "asset",
+            "materialize",
+            "-f",
+            str(_config.ROOT / "orchestration" / "definitions.py"),
+            "--select",
+            "*",
+        ],
+        check=True,
+    )
 
 
 if __name__ == "__main__":

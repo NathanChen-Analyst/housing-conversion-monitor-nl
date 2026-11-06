@@ -107,10 +107,7 @@ def test_same_day_versions_are_ordered_by_registration():
 def test_new_unit_in_old_pand():
     # office pand from 1980 with one office VBO; in 2020 three new residential VBOs appear
     rows = [ev("O1", "P9", "2012-01-01", "2012-01-02", "kantoorfunctie", bouwjaar=1980)]
-    rows += [
-        ev(f"R{i}", "P9", "2020-05-01", "2020-05-20", "woonfunctie", bouwjaar=1980)
-        for i in range(3)
-    ]
+    rows += [ev(f"R{i}", "P9", "2020-05-01", "2020-05-20", "woonfunctie", bouwjaar=1980) for i in range(3)]
     out = cv.detect(frame(rows))
     assert set(out.pattern) == {"new_unit_in_old_pand"}
     assert len(out) == 3
@@ -118,10 +115,7 @@ def test_new_unit_in_old_pand():
 
 def test_new_build_is_not_a_conversion():
     # pand built 2020, residential VBOs appear 2020: that's new construction, not a conversion
-    rows = [
-        ev(f"R{i}", "P2", "2020-09-01", "2020-09-10", "woonfunctie", bouwjaar=2020)
-        for i in range(4)
-    ]
+    rows = [ev(f"R{i}", "P2", "2020-09-01", "2020-09-10", "woonfunctie", bouwjaar=2020) for i in range(4)]
     assert len(cv.detect(frame(rows))) == 0
 
 

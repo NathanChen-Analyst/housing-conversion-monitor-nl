@@ -1,0 +1,8 @@
+# Local DuckDB profile. `cd dbt && dbt build --profiles-dir .`
+hcm:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "target/hcm.duckdb"
+      threads: 4

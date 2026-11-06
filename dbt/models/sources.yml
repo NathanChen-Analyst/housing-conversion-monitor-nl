@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: staging
+    description: "Typed BAG version tables written by hcm (silver layer). One row per object version."
+    meta:
+      external_location: "{{ var('staging_dir') }}/{name}/*.parquet"
+    tables:
+      - name: vbo_versions
+        description: "Verblijfsobject versions (SCD2: validity and registration timelines)."
+        columns:
+          - name: id
+            tests: [not_null]
+          - name: version
+            tests: [not_null]
+          - name: registered_at
+            tests: [not_null]
+      - name: pand_versions
+        description: "Pand versions."
+        columns:
+          - name: id
+            tests: [not_null]

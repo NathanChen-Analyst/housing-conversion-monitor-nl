@@ -11,7 +11,11 @@
 ![duckdb](https://img.shields.io/badge/DuckDB-SQL%20on%20Parquet-FFF000?logo=duckdb&logoColor=black)
 ![geopandas](https://img.shields.io/badge/GeoPandas-spatial%20join-139C5A)
 ![d3](https://img.shields.io/badge/D3.js-v7-F9A03C?logo=d3dotjs&logoColor=white)
-![pytest](https://img.shields.io/badge/pytest-20%20tests-0A9EDC?logo=pytest&logoColor=white)
+![dagster](https://img.shields.io/badge/Dagster-asset%20graph-4F43DD?logo=dagster&logoColor=white)
+![dbt](https://img.shields.io/badge/dbt-21%20tests-FF694B?logo=dbt&logoColor=white)
+![pandera](https://img.shields.io/badge/pandera-schemas-1F77B4)
+![pytest](https://img.shields.io/badge/pytest-29%20tests-0A9EDC?logo=pytest&logoColor=white)
+![docker](https://img.shields.io/badge/Docker-one%20command-2496ED?logo=docker&logoColor=white)
 ![license](https://img.shields.io/badge/code-MIT-lightgrey) ![data](https://img.shields.io/badge/data-CC%20BY%204.0-lightgrey)
 
 ---
@@ -69,9 +73,33 @@ The detector (shaded) implements the CBS definition of a *transformatie* as rule
 
 The full-history extract holds tens of millions of VBO versions.
 
-## Built with
+## How it is built
 
-Python 3.10+, DuckDB over Parquet for everything tabular ([`sql/`](sql/)), GeoPandas and Shapely for the point-in-polygon and boundary work ([`geo.py`](src/hcm/geo.py)), statsmodels and LightGBM for the forecast layer ([`model.py`](src/hcm/model.py)), D3 v7 for the map, pytest and ruff in GitHub Actions on two Python versions ([`tests/`](tests/), [`ci.yml`](.github/workflows/ci.yml)). The print graphic at the top is rendered from the same data files as the site ([`poster.html`](docs/poster.html)). Parse and detection steps run on a university HPC cluster; everything from the events table onward runs on a laptop in seconds.
+**Layers.** `raw/` holds PDOK deliveries untouched; `staging/` is typed Parquet, one row per BAG version (the register is a type-2 slowly changing dimension with separate validity and registration timelines); `marts/` holds yearly stock snapshots, conversion events and the published aggregates. Details and the two core as-of queries: [`docs/data-model.md`](docs/data-model.md).
+
+**Orchestration.** A Dagster asset graph — `vbo_versions → stock_snapshots → conversion_events → events_located → wijk_year → quality_report → forecast` — with asset checks guarding the silver and publish layers and a monthly schedule matching PDOK's release cadence. Every step appends duration and row counts to `runs/runs.jsonl`.
+
+![Dagster asset lineage](docs/dagster-assets.png)
+
+**Incremental and idempotent.** Monthly mutation files are merged on `(id, version)`; a later registration supersedes, an identical file is a no-op, and a ledger records what was applied. [`src/hcm/mutations.py`](src/hcm/mutations.py), proven in [`tests/test_staging_mutations.py`](tests/test_staging_mutations.py).
+
+**Data quality as code.** pandera schemas per layer, SCD2 invariants, referential integrity, grid completeness, the disclosure rule, and reconciliation against CBS with a tolerance. Errors block publishing; the report is a page: [`docs/quality.html`](https://NathanChen-Analyst.github.io/housing-conversion-monitor-nl/quality.html). [`src/hcm/quality.py`](src/hcm/quality.py).
+
+**SQL.** dbt on DuckDB — `staging → intermediate → marts`, 21 schema tests — in [`dbt/`](dbt/); the queries behind the headline numbers in [`sql/analysis.sql`](sql/analysis.sql); the forecast feature table with time-safe joins in [`sql/features.sql`](sql/features.sql).
+
+**Runs anywhere.** A synthetic BAG-like sample (`hcm sample`) exercises every step, so CI runs the whole pipeline on each push and `docker run hcm` does the same locally. The real extract and the production detector plug in without code changes.
+
+| Stack | |
+|---|---|
+| Storage & compute | Parquet (Hive-partitioned), DuckDB; parse and detection on a university HPC cluster |
+| Transformation | Python 3.10+, pandas, dbt-duckdb |
+| Geospatial | GeoPandas, Shapely, RD New → WGS84 |
+| Orchestration | Dagster (assets, checks, schedule) |
+| Quality & tests | pandera, pytest (29), dbt tests (21), ruff, pre-commit, GitHub Actions |
+| Modelling | statsmodels (NB-GLM), LightGBM (Tweedie), SHAP — forecast layer, pending |
+| Delivery | D3 v7 static site on GitHub Pages, Docker image |
+
+**At scale.** The national extract holds tens of millions of VBO versions. On a laptop, DuckDB aggregates the national events table in seconds; the parse and detection steps run on the cluster. The same code would run on BigQuery or Snowflake by pointing the dbt profile at it and partitioning `vbo_versions` by `valid_from` year.
 
 ## Data published here
 
@@ -100,19 +128,31 @@ Cite as: *Chen, N. (2026). Housing Conversion Monitor NL. https://github.com/Nat
 git clone https://github.com/NathanChen-Analyst/housing-conversion-monitor-nl
 cd housing-conversion-monitor-nl
 python -m venv .venv && source .venv/bin/activate
-make install && make test
+make install          # pip install -e ".[all]"
+make test             # 29 unit tests
+make sample           # synthetic BAG-like data
+make pipeline         # materialise every Dagster asset
+make quality          # docs/quality.html
+make dbt              # dbt build: 6 models, 21 tests
+make dagster          # UI at localhost:3000
 ```
 
-The site in `docs/` is static: serve the folder with any web server. The BAG extract is not included (tens of GB, free from PDOK); the events-table schema the pipeline expects is documented in `src/hcm/conversions.py`.
+Or: `docker build -t hcm . && docker run --rm hcm`.
+
+The real BAG extract is not included (tens of GB, free from PDOK). Place staging Parquet in `data/staging/` with the schema in `docs/data-model.md` and the same commands run on it.
 
 ## Repository layout
 
 ```
-docs/               site (index.html · app.js · style.css · data/) · poster.html · method.md
-src/hcm/            geo · export_public · conversions · features · model · cli · config
-sql/                features.sql · analysis.sql
-tests/              detection edge cases · leakage guard · time split
-config.yaml · Makefile · pyproject.toml · .pre-commit-config.yaml
+docs/               site · poster.html · data-model.md · method.md · quality.html (generated)
+src/hcm/            staging · mutations · detector · geo · export_public · quality · features · model · cli
+orchestration/      Dagster definitions (assets, checks, schedule)
+dbt/                dbt-duckdb project: staging → intermediate → marts, schema tests
+sql/                analysis.sql · features.sql
+scripts/            make_sample_data.py · make_public_data.py
+tests/              29 tests: detection edge cases, SCD2 snapshots, idempotent merge, quality, leakage, time split
+data/               raw/ · staging/ · marts/  (git-ignored; regenerated by `hcm sample`)
+Dockerfile · Makefile · pyproject.toml · config.yaml · .pre-commit-config.yaml · CHANGELOG.md
 ```
 
 ## Author

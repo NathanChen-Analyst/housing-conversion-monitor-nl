@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: stg_vbo_versions
+    description: "Deduplicated VBO versions with parsed use flags."
+    tests:
+      - dbt_utils_unique_combination:
+          combination_of: [id, version, registered_at]
+    columns:
+      - name: id
+        tests: [not_null]
+      - name: valid_from
+        tests: [not_null]
+      - name: status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["Verblijfsobject in gebruik", "Verblijfsobject gevormd", "Verblijfsobject in gebruik (niet ingemeten)",
+                       "Verblijfsobject buiten gebruik", "Verblijfsobject ingetrokken", "Niet gerealiseerd verblijfsobject",
+                       "Verblijfsobject ten onrechte opgevoerd", "Verbouwing verblijfsobject"]
+  - name: stg_pand_versions
+    columns:
+      - name: id
+        tests: [not_null]

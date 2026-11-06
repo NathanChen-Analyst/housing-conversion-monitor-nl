@@ -12,9 +12,7 @@ from .config import ROOT
 SQL_PATH = ROOT / "sql" / "features.sql"
 
 
-def build(
-    conv: pd.DataFrame, stock: pd.DataFrame, cbs: pd.DataFrame, nb: pd.DataFrame
-) -> pd.DataFrame:
+def build(conv: pd.DataFrame, stock: pd.DataFrame, cbs: pd.DataFrame, nb: pd.DataFrame) -> pd.DataFrame:
     con = duckdb.connect()
     for name, df in {"conv": conv, "stock": stock, "cbs": cbs, "nb": nb}.items():
         con.register(name, df)
@@ -45,9 +43,7 @@ def assert_no_leakage(features: pd.DataFrame, conv: pd.DataFrame) -> None:
     conv["event_date"] = pd.to_datetime(conv["event_date"])
     for (w, y), row in features.set_index(["wijk_code", "year"]).iterrows():
         as_of = pd.Timestamp(year=y - 1, month=12, day=31)
-        known = conv[
-            (conv.wijk_code == w) & (conv.reg_date <= as_of) & (conv.event_date.dt.year == y - 1)
-        ]
+        known = conv[(conv.wijk_code == w) & (conv.reg_date <= as_of) & (conv.event_date.dt.year == y - 1)]
         assert len(known) == row["conversions_lag1"], (
             f"leakage or mismatch at {w}/{y}: feature={row['conversions_lag1']}, recomputed={len(known)}"
         )
