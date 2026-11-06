@@ -1,5 +1,12 @@
 """Detect non-residential → residential conversions from BAG lifecycle events.
 
+NOTE — illustrative detector. This module implements three simplified patterns so the
+pipeline is runnable and testable end to end. The production detector behind the
+published numbers implements the CBS *transformatie* definition as a set of rule
+families over yearly stock snapshots of every pand and VBO; it is part of a paper under
+review and is kept private until publication (available to reviewers on request).
+See docs/method.md.
+
 Input: an *events* table with one row per BAG `voorkomen` (version) of a
 verblijfsobject (VBO). Required columns:
 
