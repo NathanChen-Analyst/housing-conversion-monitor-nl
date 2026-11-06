@@ -40,7 +40,7 @@ flowchart LR
 
 The detector (shaded) implements the CBS definition of a *transformatie* as rule families over yearly stock snapshots, with the office origin taken from the building's own use history. It is part of a paper under review and is kept private until publication; the repository ships an illustrative three-pattern detector ([`src/hcm/conversions.py`](src/hcm/conversions.py)) so the pipeline runs and is tested end to end. The rest of the pipeline — parsing, geography, aggregation, disclosure control, export, site — is here in full. See [`docs/method.md`](docs/method.md).
 
-Scale: the full-history extract holds tens of millions of VBO versions; the pipeline runs on a university HPC cluster for the parse and detection steps and on a laptop from the events table onward (DuckDB over Parquet, seconds for the national aggregation).
+The full-history extract holds tens of millions of VBO versions.
 
 ## Key engineering decisions
 
@@ -53,18 +53,9 @@ Scale: the full-history extract holds tens of millions of VBO versions; the pipe
 | Static site with vendored D3, data as plain JSON | Zero infrastructure, redeploys on push, works in ten years | [`docs/`](docs/) |
 | Leakage test that recomputes lag features from raw events | Guards the time split against future edits of the SQL | [`features.assert_no_leakage`](src/hcm/features.py) |
 
-## What a reviewer can inspect
+## Built with
 
-| Skill | Evidence |
-|---|---|
-| Data engineering at national scale | Parquet + DuckDB pipeline, [`features.sql`](sql/features.sql), events-table schema in [`conversions.py`](src/hcm/conversions.py) |
-| Geospatial | Point-in-polygon on RD New, dissolve and simplify for the web, [`geo.py`](src/hcm/geo.py) |
-| SQL | [`sql/analysis.sql`](sql/analysis.sql): the queries behind every number above; [`sql/features.sql`](sql/features.sql): window functions, spatial lags, time-safe joins |
-| Statistics / ML | NB-GLM and LightGBM-Tweedie with monotone constraints, strict time split, business metric (capture@k), [`model.py`](src/hcm/model.py) |
-| Testing & CI | 20 unit tests incl. edge cases and a leakage guard, ruff, GitHub Actions on two Python versions, [`tests/`](tests/), [`ci.yml`](.github/workflows/ci.yml) |
-| Disclosure control & licensing | Suppression rule, CC BY data / MIT code, provenance in every output's `meta` |
-| Visualisation & communication | Interactive map with year animation and ranking, print graphic generated from the same data ([`poster.html`](docs/poster.html)) |
-| Reproducibility | `make install && make test`, config in one YAML, CLI with four commands |
+Python 3.10+, DuckDB over Parquet for everything tabular ([`sql/`](sql/)), GeoPandas and Shapely for the point-in-polygon and boundary work ([`geo.py`](src/hcm/geo.py)), statsmodels and LightGBM for the forecast layer ([`model.py`](src/hcm/model.py)), D3 v7 for the map, pytest and ruff in GitHub Actions on two Python versions ([`tests/`](tests/), [`ci.yml`](.github/workflows/ci.yml)). The print graphic at the top is rendered from the same data files as the site ([`poster.html`](docs/poster.html)). Parse and detection steps run on a university HPC cluster; everything from the events table onward runs on a laptop in seconds.
 
 ## Data published here
 
