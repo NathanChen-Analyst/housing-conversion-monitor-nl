@@ -104,9 +104,12 @@ def site(config: Path = typer.Option(None)):
 @app.command()
 def sample():
     """Generate the synthetic BAG-like sample (data/staging, data/raw/mutations, buurt_sample.gpkg)."""
-    import runpy
+    import importlib.util
 
-    runpy.run_path(str(_config.ROOT / "scripts" / "make_sample_data.py"), run_name="__main__")
+    spec = importlib.util.spec_from_file_location("make_sample_data", _config.ROOT / "scripts" / "make_sample_data.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    mod.main(_config.ROOT / "data")
 
 
 @app.command()
