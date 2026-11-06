@@ -25,17 +25,44 @@ This project turns that register into a neighbourhood-level, yearly, openly lice
 ## Pipeline
 
 ```mermaid
-flowchart LR
-    A[PDOK · LV BAG 2.0<br/>full extract, XML] --> B[Streaming parse<br/>→ Parquet<br/>VBO + pand versions]
-    B --> C[Yearly stock snapshots<br/>per pand and VBO]
-    C --> D{{Detector<br/>CBS transformatie rules<br/>office origin}}
-    D --> E[Conversion events<br/>one row per dwelling]
-    E --> F[Spatial join<br/>→ 2012 wijk · buurt · gemeente]
-    F --> G[Aggregate + disclosure control<br/>wijk × year, &lt;3 suppressed]
-    G --> H[JSON + GeoJSON]
-    H --> I[Static site · D3<br/>GitHub Pages]
-    G --> J[CSV, CC BY 4.0]
-    style D fill:#f2d9d0,stroke:#b5452b
+flowchart TB
+    subgraph S[" Source "]
+        A["<b>Kadaster BAG</b><br/>LV BAG 2.0 full extract · PDOK<br/><i>XML, tens of millions of versions</i>"]
+    end
+
+    subgraph P[" Processing · HPC "]
+        B["<b>Parse</b><br/>streaming XML → Parquet<br/>VBO and pand versions"]
+        C["<b>Snapshot</b><br/>yearly stock of every pand and VBO<br/>reconstructed from version history"]
+        D["<b>Detect</b><br/>CBS transformatie rules · office origin<br/><i>private until publication</i>"]
+        E["<b>Events</b><br/>one row per converted dwelling<br/>year · building · location"]
+    end
+
+    subgraph G[" Geography · aggregation "]
+        F["<b>Spatial join</b><br/>RD New points → CBS 2012<br/>buurt · wijk · gemeente"]
+        H["<b>Aggregate</b><br/>wijk × year<br/>disclosure control: cells &lt; 3 suppressed"]
+    end
+
+    subgraph O[" Output "]
+        I["<b>Interactive map</b><br/>D3 · GitHub Pages"]
+        J["<b>Open data</b><br/>JSON · GeoJSON · CSV<br/>CC BY 4.0"]
+    end
+
+    A --> B --> C --> D --> E --> F --> H
+    H --> I
+    H --> J
+
+    classDef src fill:#eef2f5,stroke:#9aa5b1,color:#1c2230
+    classDef proc fill:#ffffff,stroke:#9aa5b1,color:#1c2230
+    classDef det fill:#f2d9d0,stroke:#b5452b,color:#1c2230
+    classDef out fill:#e9f2ec,stroke:#2f7d5a,color:#1c2230
+    class A src
+    class B,C,E,F,H proc
+    class D det
+    class I,J out
+    style S fill:#fafafa,stroke:#dcd8cf
+    style P fill:#fafafa,stroke:#dcd8cf
+    style G fill:#fafafa,stroke:#dcd8cf
+    style O fill:#fafafa,stroke:#dcd8cf
 ```
 
 The detector (shaded) implements the CBS definition of a *transformatie* as rule families over yearly stock snapshots, with the office origin taken from the building's own use history. It is part of a paper under review and is kept private until publication; the repository ships an illustrative three-pattern detector ([`src/hcm/conversions.py`](src/hcm/conversions.py)) so the pipeline runs and is tested end to end. The rest of the pipeline — parsing, geography, aggregation, disclosure control, export, site — is here in full. See [`docs/method.md`](docs/method.md).
