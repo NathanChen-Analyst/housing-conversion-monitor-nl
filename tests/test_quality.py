@@ -1,17 +1,29 @@
 """Quality layer: schemas catch bad rows, suppression rule is enforced, report renders."""
 
+import subprocess
+import sys
 from datetime import date
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from hcm import quality
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_staging_checks_pass_on_sample():
-    qr = quality.run(ROOT / "data" / "staging")
+@pytest.fixture(scope="module")
+def staging_dir(tmp_path_factory):
+    out = tmp_path_factory.mktemp("q")
+    subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "make_sample_data.py"), str(out)], check=True, cwd=ROOT
+    )
+    return out / "staging"
+
+
+def test_staging_checks_pass_on_sample(staging_dir):
+    qr = quality.run(staging_dir)
     names = {c.name: c for c in qr.checks}
     assert names["schema:vbo_versions"].passed
     assert names["validity spans non-negative"].passed

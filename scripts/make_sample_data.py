@@ -180,4 +180,4 @@ def main(out_root: Path = ROOT / "data") -> None:
 
 
 if __name__ == "__main__":
-    main()
+    main(Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "data")
